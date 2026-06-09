@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Invoice Builder</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f4f6fb;
+}
+
+.container{
+    padding:30px;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.create-btn{
+    background:#1F4EAA;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+/* ===== MODAL ===== */
+.modal{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.5);
+}
+
+.modal-content{
+    background:white;
+    width:90%;
+    height:90%;
+    margin:2% auto;
+    padding:20px;
+    overflow:auto;
+    border-radius:10px;
+}
+
+/* ===== LAYOUT ===== */
+.row{
+    display:flex;
+    gap:20px;
+}
+
+.col{
+    flex:1;
+}
+
+label{
+    font-weight:600;
+    display:block;
+    margin-top:10px;
+}
+
+input, textarea{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    border:1px solid #ddd;
+    border-radius:6px;
+}
+
+/* ===== INVOICE INFO ===== */
+.info-box{
+    background:#eef4ff;
+    padding:15px;
+    border-radius:8px;
+}
+
+/* ===== TABLE ===== */
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th{
+    background:#1F4EAA;
+    color:white;
+    padding:10px;
+}
+
+td{
+    border:1px solid #ddd;
+    text-align:center;
+    padding:8px;
+}
+
+/* ===== BUTTONS ===== */
+.btn{
+    padding:10px 15px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+.add-btn{background:#28a745;color:white;}
+.save-btn{background:#1F4EAA;color:white;}
+.cancel-btn{background:#dc3545;color:white;}
+.preview-btn{background:#6c757d;color:white;}
+
+/* ===== SUMMARY ===== */
+.summary{
+    width:300px;
+    margin-top:20px;
+}
+
+.summary table{
+    width:100%;
+}
+
+.bank{
+    margin-top:20px;
+    padding:15px;
+    background:#f7f9fc;
+    border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+    <h2>Invoice System</h2>
+
+    <button class="create-btn" onclick="openModal()">
+        Create Invoice
+    </button>
+</div>
+
+<!-- ================= MODAL ================= -->
+<div class="modal" id="modal">
+
+<div class="modal-content">
+
+<!-- ================= TOP SECTION ================= -->
+<div class="row">
+
+<div class="col">
+
+<h3>Bill To</h3>
+
+<label>Name</label>
+<input id="tenant">
+
+<label>CID</label>
+<input id="cid">
+
+<label>Phone</label>
+<input id="phone">
+
+<label>Plot No</label>
+<input id="plot">
+
+<label>Building</label>
+<input id="building">
+
+<label>Unit No</label>
+<input id="unit">
+
+</div>
+
+<div class="col">
+
+<h3>Invoice Details</h3>
+
+<div class="info-box">
+
+<p><b>Invoice No:</b> <span id="invNo">GNY/RED/AUTO</span></p>
+<p><b>Invoice Date:</b> <span id="invDate"></span></p>
+<p><b>Due Date:</b> <span id="dueDate"></span></p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ================= TABLE ================= -->
+<h3>Rental Details</h3>
+
+<table>
+<thead>
+<tr>
+<th>Sl</th>
+<th>Month</th>
+<th>Rent</th>
+<th>GST 5%</th>
+<th>Total</th>
+<th>Remarks</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="body"></tbody>
+</table>
+
+<button class="btn add-btn" onclick="addRow()">+ Add Month</button>
+
+<!-- ================= SUMMARY ================= -->
+<div class="summary">
+
+<table>
+<tr>
+<td>Total Rent</td>
+<td id="totalRent">0</td>
+</tr>
+
+<tr>
+<td>Total GST</td>
+<td id="totalGST">0</td>
+</tr>
+
+<tr>
+<td><b>Grand Total</b></td>
+<td id="grand">0</td>
+</tr>
+</table>
+
+</div>
+
+<!-- ================= BANK ================= -->
+<div class="bank">
+<h3>Bank Details</h3>
+<p>Bank Name: Bank of Bhutan</p>
+<p>Account Name: Gerab Revenue Account</p>
+<p>Account No: 215001353</p>
+</div>
+
+<!-- ================= REMARKS ================= -->
+<label>Remarks</label>
+<textarea id="remarks"></textarea>
+
+<!-- ================= ACTIONS ================= -->
+<button class="btn preview-btn" onclick="preview()">Preview</button>
+<button class="btn save-btn" onclick="save()">Save & Download PDF</button>
+<button class="btn cancel-btn" onclick="closeModal()">Cancel</button>
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+let count = 0;
+let rows = [];
+
+function openModal(){
+
+    document.getElementById("modal").style.display="block";
+
+    let today = new Date();
+    document.getElementById("invDate").innerText =
+        today.toLocaleDateString();
+
+    let due = new Date(today.getFullYear(), today.getMonth()+1, 10);
+    document.getElementById("dueDate").innerText =
+        due.toLocaleDateString();
+
+    addRow();
+}
+
+function closeModal(){
+    document.getElementById("modal").style.display="none";
+}
+
+function addRow(){
+
+    count++;
+
+    let row = `
+    <tr>
+        <td>${count}</td>
+
+        <td><input type="month"></td>
+
+        <td><input type="number" oninput="calc()"></td>
+
+        <td class="gst">0</td>
+
+        <td class="total">0</td>
+
+        <td>
+            <input type="text" placeholder="Remarks" class="row-remarks">
+        </td>
+
+        <td>
+            <button onclick="this.parentElement.parentElement.remove();calc()">X</button>
+        </td>
+    </tr>
+    `;
+
+    document.getElementById("body").insertAdjacentHTML("beforeend", row);
+}
+
+function calc(){
+
+    let rentTotal = 0;
+    let gstTotal = 0;
+
+    document.querySelectorAll("#body tr").forEach(r=>{
+
+        let rent = parseFloat(r.querySelector("input[type=number]").value || 0);
+
+        let gst = rent * 0.05;
+        let total = rent + gst;
+
+        r.querySelector(".gst").innerText = gst.toFixed(2);
+        r.querySelector(".total").innerText = total.toFixed(2);
+
+        rentTotal += rent;
+        gstTotal += gst;
+    });
+
+    document.getElementById("totalRent").innerText = rentTotal.toFixed(2);
+    document.getElementById("totalGST").innerText = gstTotal.toFixed(2);
+    document.getElementById("grand").innerText = (rentTotal + gstTotal).toFixed(2);
+}
+
+function preview(){
+    calc();
+    alert("Preview ready");
+}
+
+function save(){
+
+    calc();
+
+    let items = [];
+
+    document.querySelectorAll("#body tr").forEach(r=>{
+        items.push({
+            month: r.querySelector("input[type=month]").value,
+            rent: r.querySelector("input[type=number]").value,
+            remarks: r.querySelector(".row-remarks").value
+        });
+    });
+
+    fetch("/admin/invoice/submit",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            tenant: document.getElementById("tenant").value,
+            cid: document.getElementById("cid").value,
+            phone: document.getElementById("phone").value,
+            plot: document.getElementById("plot").value,
+            building: document.getElementById("building").value,
+            unit: document.getElementById("unit").value,
+            total_rent: document.getElementById("totalRent").innerText,
+            total_gst: document.getElementById("totalGST").innerText,
+            grand_total: document.getElementById("grand").innerText,
+            items: items,
+            remarks: document.getElementById("remarks").value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert("Saved: " + data.invoice_no);
+
+        window.location.href =
+            `/admin/invoice/pdf/${encodeURIComponent(data.invoice_no)}`;
+    });
+
+}
+</script>
+
+</body>
+</html>

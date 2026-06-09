@@ -1,0 +1,92 @@
+{% extends "admin_base.html" %}
+
+{% block content %}
+
+<h2>Manage Applications</h2>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>CID</th>
+        <th>Phone</th>
+        <th>Dzongkhag</th>
+        <th>Location</th>
+        <th>Building</th>
+        <th>Unit Type</th>
+        <th>Unit No</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    {% for row in data %}
+    <tr>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[2] }}</td>
+        <td>{{ row[3] }}</td>
+        <td>{{ row[4] }}</td>
+        <td>{{ row[5] }}</td>
+        <td>{{ row[6] }}</td>
+        <td>{{ row[7] }}</td>
+        <td>{{ row[8] }}</td>
+
+        <td>
+            <span class="badge {{ row[9] }}">{{ row[9] }}</span>
+        </td>
+
+        <td>
+            <a href="/update_status/{{ row[0] }}/approve">
+                <button style="background:green;color:white;">Approve</button>
+            </a>
+
+            <a href="/update_status/{{ row[0] }}/reject">
+                <button style="background:red;color:white;">Reject</button>
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+<style>
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+    margin-top:20px;
+}
+
+th, td{
+    padding:10px;
+    border:1px solid #ddd;
+    font-size:13px;
+}
+
+th{
+    background:#1F4EAA;
+    color:white;
+}
+
+button{
+    padding:6px 10px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    margin:2px;
+}
+
+.badge{
+    padding:4px 8px;
+    border-radius:6px;
+    color:white;
+}
+
+.Pending{ background:orange; }
+.Approved{ background:green; }
+.Rejected{ background:red; }
+
+</style>
+
+{% endblock %}

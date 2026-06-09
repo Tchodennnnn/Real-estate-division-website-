@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GNY Tenant System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body class="main-page">
+
+    <!-- BACKGROUND VIDEO -->
+    <video autoplay muted loop id="bg-video">
+        <source src="{{ url_for('static', filename='bg.mp4') }}" type="video/mp4">
+    </video>
+
+    <!-- TOP LINKS -->
+    <div class="top-links">
+        <a href="/apply"><button>Apply</button></a>
+        <a href="/track"><button>Track your application</button></a>
+    </div>
+
+    <!-- LOGIN BOX -->
+    <div class="login-box">
+
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+        </div>
+
+        <div class="login-title-main">
+            GNY Housing Application
+        </div>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+
+            <button type="submit">Login</button>
+        </form>
+
+    </div>
+
+</body>
+</html>

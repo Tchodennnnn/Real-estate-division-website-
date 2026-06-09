@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tenant Application Form</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: Arial, sans-serif;
+}
+
+body{
+    background:#f4f7fc;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:30px;
+}
+
+.form-container{
+    width:420px;
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.1);
+}
+
+.form-title{
+    text-align:center;
+    color:#1F4EAA;
+    margin-bottom:20px;
+}
+
+input, select{
+    width:100%;
+    padding:12px;
+    margin:6px 0;
+    border-radius:8px;
+    border:1px solid #ddd;
+    font-size:14px;
+}
+
+input:focus, select:focus{
+    outline:none;
+    border-color:#1F4EAA;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:8px;
+    background:#1F4EAA;
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#173c82;
+}
+
+.success{
+    color:green;
+    text-align:center;
+    margin-bottom:10px;
+}
+
+.error{
+    color:red;
+    text-align:center;
+    margin-bottom:10px;
+}
+
+small{
+    color:red;
+    font-size:12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="form-container">
+
+<h2 class="form-title">Tenant Application Form</h2>
+
+<!-- SUCCESS / ERROR MESSAGE -->
+{% if success %}
+<p class="success">{{ success }}</p>
+{% endif %}
+
+{% if error %}
+<p class="error">{{ error }}</p>
+{% endif %}
+
+<form method="POST">
+
+<!-- PERSONAL INFO -->
+<input name="full_name" placeholder="Full Name" required>
+
+<input id="cid" name="cid" placeholder="CID Number" required>
+<small id="cid-error"></small>
+
+<input id="phone" name="phone" placeholder="Phone Number" required>
+<small id="phone-error"></small>
+
+<!-- PROPERTY INFO -->
+
+<select id="dzongkhag" name="dzongkhag" required>
+    <option value="">Select Dzongkhag</option>
+</select>
+
+<select id="location" name="location" required>
+    <option value="">Select Location</option>
+</select>
+
+<select id="building" name="building" required>
+    <option value="">Select Building</option>
+</select>
+
+<select id="unit_type" name="unit_type" required>
+    <option value="">Select Unit Type</option>
+</select>
+
+<select id="unit_no" name="unit_no" required>
+    <option value="">Select Unit Number</option>
+</select>
+
+<button type="submit">Submit Application</button>
+
+</form>
+
+</div>
+
+<script>
+
+/* ================= LOAD DZONGKHAG ================= */
+window.onload = function () {
+
+    fetch("/api/dzongkhags")
+    .then(res => res.json())
+    .then(data => {
+
+        let dz = document.getElementById("dzongkhag");
+        dz.innerHTML = "<option value=''>Select Dzongkhag</option>";
+
+        data.forEach(item => {
+            dz.innerHTML += `<option value="${item}">${item}</option>`;
+        });
+
+    });
+};
+
+
+/* ================= LOCATION ================= */
+document.getElementById("dzongkhag").addEventListener("change", function () {
+
+    fetch(`/api/locations/${this.value}`)
+    .then(res => res.json())
+    .then(data => {
+
+        let loc = document.getElementById("location");
+        loc.innerHTML = "<option value=''>Select Location</option>";
+
+        data.forEach(item => {
+            loc.innerHTML += `<option value="${item}">${item}</option>`;
+        });
+
+    });
+
+});
+
+
+/* ================= BUILDING ================= */
+document.getElementById("location").addEventListener("change", function () {
+
+    let dz = document.getElementById("dzongkhag").value;
+
+    fetch(`/api/buildings/${dz}/${this.value}`)
+    .then(res => res.json())
+    .then(data => {
+
+        let b = document.getElementById("building");
+        b.innerHTML = "<option value=''>Select Building</option>";
+
+        data.forEach(item => {
+            b.innerHTML += `<option value="${item}">${item}</option>`;
+        });
+
+    });
+
+});
+
+
+/* ================= UNIT TYPE ================= */
+document.getElementById("building").addEventListener("change", function () {
+
+    let dz = document.getElementById("dzongkhag").value;
+    let loc = document.getElementById("location").value;
+
+    fetch(`/api/unit-types/${dz}/${loc}/${this.value}`)
+    .then(res => res.json())
+    .then(data => {
+
+        let ut = document.getElementById("unit_type");
+        ut.innerHTML = "<option value=''>Select Unit Type</option>";
+
+        data.forEach(item => {
+            ut.innerHTML += `<option value="${item}">${item}</option>`;
+        });
+
+    });
+
+});
+
+
+/* ================= UNIT NUMBER ================= */
+document.getElementById("unit_type").addEventListener("change", function () {
+
+    let dz = document.getElementById("dzongkhag").value;
+    let loc = document.getElementById("location").value;
+    let b = document.getElementById("building").value;
+
+    fetch(`/api/units/${dz}/${loc}/${b}/${this.value}`)
+    .then(res => res.json())
+    .then(data => {
+
+        let un = document.getElementById("unit_no");
+        un.innerHTML = "<option value=''>Select Unit Number</option>";
+
+        data.forEach(item => {
+            un.innerHTML += `<option value="${item}">${item}</option>`;
+        });
+
+    });
+
+});
+
+
+/* ================= VALIDATION ================= */
+
+const cid = document.getElementById("cid");
+const phone = document.getElementById("phone");
+
+cid.addEventListener("input", function () {
+
+    this.value = this.value.replace(/\D/g, "");
+
+    if (this.value.length !== 11) {
+        document.getElementById("cid-error").innerText = "CID must be 11 digits";
+    } else {
+        document.getElementById("cid-error").innerText = "";
+    }
+});
+
+phone.addEventListener("input", function () {
+
+    this.value = this.value.replace(/\D/g, "");
+
+    if (this.value.length !== 8) {
+        document.getElementById("phone-error").innerText = "Phone must be 8 digits";
+    } else {
+        document.getElementById("phone-error").innerText = "";
+    }
+});
+
+</script>
+
+</body>
+</html>

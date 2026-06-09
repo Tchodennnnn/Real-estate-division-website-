@@ -1,0 +1,130 @@
+body {
+    margin: 0;
+    font-family: Arial;
+}
+
+/* BACKGROUND */
+.main-page {
+    background: linear-gradient(135deg,#0F2D6B,#1F4EAA,#4A90E2);
+    height: 100vh;
+    position: relative;
+}
+
+/* TOP BUTTONS */
+.top-links {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    display: flex;
+    gap: 12px;
+}
+
+.top-links button {
+    background: #A7D8FF;      /* solid light blue fill */
+    color: #0F2D6B;           /* dark blue text */
+    border: none;             /* remove border */
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+
+    transition: 0.3s ease;
+}
+
+/* LOGIN BOX */
+.login-box {
+    background: white;
+    width: 320px;   /* reduced from 420px */
+    padding: 50px;
+    border-radius: 12px;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    min-height: 420px;
+
+    .login-title-main {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #1F4EAA;
+}
+}
+
+/* LOGO */
+.logo-container {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.logo-container img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+}
+
+#bg-video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+.declaration {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 11px;
+    color: #666;
+}
+
+/* FORCE INLINE ALIGNMENT */
+.declaration-label {
+    display: flex;
+    align-items: flex-start;
+}
+
+/* FIX CHECKBOX POSITION */
+.declaration-label input {
+    margin-top: 3px;
+    margin-right: 8px;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+/* TEXT BLOCK */
+.declaration-text {
+    flex: 1;
+    line-height: 1.4;
+}
+
+/* INPUTS */
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 10px;
+    background: #1F4EAA;
+    color: white;
+    border: none;
+    border-radius: 6px;
+}
+
+/* ERROR */
+.error {
+    color: red;
+}
+
+.success {
+    color: green;
+}

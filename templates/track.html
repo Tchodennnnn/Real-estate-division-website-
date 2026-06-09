@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Track Application</title>
+
+<style>
+
+body{
+    font-family: Arial;
+    background:#f4f7fc;
+    display:flex;
+    justify-content:center;
+    padding:30px;
+}
+
+.container{
+    width:900px;
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.1);
+}
+
+h2{
+    text-align:center;
+    color:#1F4EAA;
+    margin-bottom:20px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    margin-bottom:10px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    background:#1F4EAA;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#173c82;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+th, td{
+    padding:10px;
+    border:1px solid #ddd;
+    text-align:left;
+    font-size:13px;
+}
+
+th{
+    background:#1F4EAA;
+    color:white;
+}
+
+.no-data{
+    text-align:center;
+    color:red;
+    margin-top:15px;
+}
+
+/* STATUS STYLES */
+.status {
+    padding:4px 10px;
+    border-radius:6px;
+    font-size:12px;
+    font-weight:600;
+    color:white;
+    display:inline-block;
+}
+
+.approved {
+    background:green;
+}
+
+.rejected {
+    background:red;
+}
+
+.pending {
+    background:orange;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Track Your Application</h2>
+
+<form method="POST">
+
+<input name="cid" placeholder="Enter CID Number" required>
+
+<button type="submit">Search</button>
+
+</form>
+
+{% if cid %}
+<p style="margin-top:10px;">
+Showing results for CID: <b>{{ cid }}</b>
+</p>
+{% endif %}
+
+{% if results %}
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>CID</th>
+        <th>Phone</th>
+        <th>Dzongkhag</th>
+        <th>Location</th>
+        <th>Building</th>
+        <th>Unit Type</th>
+        <th>Unit No</th>
+        <th>Status</th>
+        <th>Date</th>
+    </tr>
+
+    {% for r in results %}
+    <tr>
+        <td>{{ r[0] }}</td>
+        <td>{{ r[1] }}</td>
+        <td>{{ r[2] }}</td>
+        <td>{{ r[3] }}</td>
+        <td>{{ r[4] }}</td>
+        <td>{{ r[5] }}</td>
+        <td>{{ r[6] }}</td>
+        <td>{{ r[7] }}</td>
+        <td>{{ r[8] }}</td>
+
+        <td>
+            {% if r[9] == "Approved" %}
+                <span class="status approved">Approved</span>
+
+            {% elif r[9] == "Rejected" %}
+                <span class="status rejected">Rejected</span>
+
+            {% else %}
+                <span class="status pending">Pending</span>
+            {% endif %}
+        </td>
+
+        <td>{{ r[10] }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+{% elif cid %}
+
+<p class="no-data">No applications found for this CID.</p>
+
+{% endif %}
+
+</div>
+
+</body>
+</html>
